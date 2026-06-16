@@ -1,0 +1,263 @@
+/* Liquid Glass Color Variables */
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-highlight: rgba(255, 255, 255, 0.4);
+    --text-primary: #1d1d1f;
+    --text-secondary: #86868b;
+    --system-blue: #007aff;
+    --color-primary: #007aff; /* Controls the SVG background block */
+    --body-bg-color: #f2f2f7;
+    --body-gradient-1: #ff8c42;
+    --body-gradient-2: #4287ff;
+    --body-gradient-3: #d942ff;
+    --card-shadow: 0 24px 48px rgba(0, 0, 0, 0.1), inset 0 1px 1px var(--glass-highlight);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        --glass-bg: rgba(15, 23, 42, 0.72);
+        --glass-border: rgba(255, 255, 255, 0.12);
+        --glass-highlight: rgba(255, 255, 255, 0.12);
+        --text-primary: #f3f4f6;
+        --text-secondary: #cbd5e1;
+        --body-bg-color: #060b16;
+        --body-gradient-1: rgba(129, 140, 248, 0.35);
+        --body-gradient-2: rgba(59, 130, 246, 0.28);
+        --body-gradient-3: rgba(168, 85, 247, 0.28);
+        --card-shadow: 0 24px 48px rgba(0, 0, 0, 0.35), inset 0 1px 1px var(--glass-highlight);
+    }
+}
+
+:root[data-theme="dark"] {
+    --glass-bg: rgba(15, 23, 42, 0.72);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-highlight: rgba(255, 255, 255, 0.12);
+    --text-primary: #f3f4f6;
+    --text-secondary: #cbd5e1;
+    --body-bg-color: #060b16;
+    --body-gradient-1: rgba(129, 140, 248, 0.35);
+    --body-gradient-2: rgba(59, 130, 246, 0.28);
+    --body-gradient-3: rgba(168, 85, 247, 0.28);
+    --card-shadow: 0 24px 48px rgba(0, 0, 0, 0.35), inset 0 1px 1px var(--glass-highlight);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    min-height: 100%;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* Visually rich background so the Liquid Glass effect can shine through */
+    background: radial-gradient(circle at 15% 50%, var(--body-gradient-1), transparent 50%),
+                radial-gradient(circle at 85% 30%, var(--body-gradient-2), transparent 50%),
+                radial-gradient(circle at 50% 80%, var(--body-gradient-3), transparent 50%);
+    background-color: var(--body-bg-color);
+    background-size: cover;
+    overflow-x: hidden;
+}
+
+/* Form Container Setup */
+.login-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    z-index: 10;
+    min-height: 100vh;
+    overflow-y: auto;
+}
+
+/* The Liquid Glass Card Structure */
+.login-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(24px) saturate(150%);
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    border: 1px solid var(--glass-border);
+    border-radius: 32px;
+    box-shadow: var(--card-shadow);
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.theme-switcher {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+}
+
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+}
+
+.theme-toggle input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-track {
+    width: 50px;
+    height: 26px;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    position: relative;
+    transition: background 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.theme-toggle input:checked + .toggle-track {
+    background: rgba(255, 255, 255, 0.35);
+    border-color: rgba(255, 255, 255, 0.32);
+}
+
+.toggle-thumb {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 18px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.16);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.theme-toggle input:checked + .toggle-track .toggle-thumb {
+    transform: translateX(24px);
+    background: #fafafa;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-label {
+    color: var(--text-primary);
+    font-weight: 500;
+    transition: color 0.25s ease;
+}
+
+.logo-placeholder {
+    display: inline-flex;
+    margin-bottom: 16px;
+}
+
+h1 {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 24px;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+}
+
+.login-header p {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    width: 100%;
+    margin-bottom: 18px;
+}
+
+.label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+label {
+    display: block;
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+/* Translucent Glass Inputs */
+input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--glass-border);
+    border-radius: 14px; 
+    background: rgba(255, 255, 255, 0.35); 
+    font-size: 16px;
+    color: var(--text-primary);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    outline: none;
+}
+
+input::placeholder {
+    color: var(--text-secondary);
+}
+
+input:focus {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: var(--system-blue);
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15);
+}
+
+/* Solid Premium Primary Button */
+.button-primary {
+    width: 100%;
+    padding: 14px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 14px;
+    background: var(--system-blue);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.button-primary:hover {
+    opacity: 0.9;
+}
+
+.button-primary:active {
+    transform: scale(0.97);
+}
+
+.forgot-link {
+    font-size: 13px;
+    color: var(--system-blue);
+    text-decoration: none;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
