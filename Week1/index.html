@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GEMDesk | Sign In</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <main class="login-wrapper">
+    <div class="login-card">
+      <header class="login-header">
+        <div class="logo-placeholder" aria-label="GEMDesk logo">
+          <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="gemdeskLogoTitle">
+            <title id="gemdeskLogoTitle">GEMDesk Logo</title>
+            <rect x="4" y="4" width="40" height="40" rx="12" fill="var(--color-primary)" opacity="0.15"/>
+            <path d="M24 10L37 19L31 38H17L11 19L24 10Z" fill="white"/>
+            <path d="M24 10L31 19H17L24 10Z" fill="rgba(255,255,255,0.85)"/>
+            <path d="M24 38L17 19H31L24 38Z" fill="rgba(255,255,255,0.7)"/>
+            <circle cx="24" cy="24" r="2.5" fill="var(--color-primary)"/>
+          </svg>
+        </div>
+        <h1>GEMDesk</h1>
+        <p>Sign in to access your workspace securely.</p>
+        <div class="theme-switcher">
+          <label class="theme-toggle" for="theme-toggle-checkbox">
+            <input type="checkbox" id="theme-toggle-checkbox" aria-label="Toggle dark mode">
+            <span class="toggle-track">
+              <span class="toggle-thumb"></span>
+            </span>
+            <span class="toggle-label">Dark mode</span>
+          </label>
+        </div>
+      </header>
+
+      <form class="login-form" action="#" method="POST">
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            placeholder="name@company.com" 
+            required 
+            autocomplete="username"
+          >
+        </div>
+
+        <div class="form-group">
+          <div class="label-row">
+            <label for="password">Password</label>
+            <a href="/forgot-password" class="forgot-link">Forgot password?</a>
+          </div>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            placeholder="••••••••" 
+            required 
+            autocomplete="current-password"
+          >
+        </div>
+
+        <button type="submit" class="button-primary">Sign in</button>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    const themeToggle = document.getElementById('theme-toggle-checkbox');
+    const root = document.documentElement;
+    const storedTheme = localStorage.getItem('theme');
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    const applyTheme = theme => {
+      root.dataset.theme = theme;
+      themeToggle.checked = theme === 'dark';
+      localStorage.setItem('theme', theme);
+    };
+
+    const initialTheme = storedTheme || (systemDark ? 'dark' : 'light');
+    applyTheme(initialTheme);
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleSystemTheme = e => {
+      if (!storedTheme) {
+        applyTheme(e.matches ? 'dark' : 'light');
+      }
+    };
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleSystemTheme);
+    } else if (mediaQuery.addListener) {
+      mediaQuery.addListener(handleSystemTheme);
+    }
+
+    themeToggle.addEventListener('change', () => {
+      applyTheme(themeToggle.checked ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>
