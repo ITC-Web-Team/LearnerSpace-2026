@@ -50,7 +50,7 @@ Build a Task Manager using HTML, CSS & JavaScript.
 - Update/Delete tasks from the list
 
 ## Bonus (Optional)
-Deploy your project using GitHub Pages (GitHub.io) and share the live link
+Deploy your project using GitHub Pages (GitHub.io) and share the live link DONE: visit: https://arhan-cyber.github.io/ for the live project
 
 ### 📁 Submission Format
 
