@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Manager</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="top-nav">
+    <div class="nav-container">
+  <svg class="custom-logo" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="2" y="4" width="14" height="14" rx="2" fill="var(--color-microsoft-blue)" />
+    <rect x="8" y="10" width="14" height="14" rx="2" fill="var(--color-steel-gray)" fill-opacity="0.9" />
+  </svg>
+  <span class="nav-brand">Task Management System</span>
+</div>
+  </header>
+
+  <main class="page-container">
+    <section class="section-heading-group">
+      <h1 class="heading-sm">Workspace Tasks</h1>
+      <p class="subtext">Manage, categorize, and track your daily objectives.</p>
+    </section>
+
+    <div class="card-surface form-card">
+      <form id="taskForm" class="task-form">
+        <div class="input-group">
+          <input type="text" id="taskInput" placeholder="Enter task description..." autocomplete="off">
+        </div>
+        <div class="input-row">
+          <select id="taskCategory">
+            <option value="Work">Work</option>
+            <option value="Personal">Personal</option>
+            <option value="Urgent">Urgent</option>
+          </select>
+          <input type="date" id="taskDueDate">
+          <button type="submit" id="submitBtn" class="primary-btn">Add task</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="list-controls">
+      <div class="filters" id="filterContainer">
+        <button class="ghost-link active" data-filter="all">All tasks</button>
+        <button class="ghost-link" data-filter="pending">Pending</button>
+        <button class="ghost-link" data-filter="completed">Completed</button>
+      </div>
+      <span class="metrics" id="taskMetrics">0 total tasks</span>
+    </div>
+
+    <div id="taskList" class="task-list">
+      </div>
+  </main>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
