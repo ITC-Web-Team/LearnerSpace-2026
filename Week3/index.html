@@ -1,176 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Smart Task Planner</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Smart Task Planner</title>
+  <!-- Google Fonts Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="glass-bg"></div>
-    <div class="glow-sphere orange"></div>
-    <div class="glow-sphere purple"></div>
-
-    <div class="container">
-        <header class="app-header">
-            <div class="logo-wrapper">
-                <i class="fa-solid fa-wand-magic-sparkles logo-icon"></i>
-                <h1 class="app-title">PlanIt<span>AI</span></h1>
-            </div>
-            <p class="app-subtitle">Transform your ambitious goals into step-by-step actionable plans instantly powered by Gemini.</p>
-        </header>
-
-        <main class="main-content">
-            <!-- Planner Config Section -->
-            <section class="planner-card input-section">
-                <h2 class="section-title"><i class="fa-solid fa-compass"></i> What's your next goal?</h2>
-                <div class="input-group">
-                    <input type="text" id="goalInput" placeholder="e.g., Plan a 3-day weekend trip to Tokyo, prepare for a technical interview, launch a product..." required autocomplete="off">
-                    <button id="generateBtn" class="primary-btn">
-                        <span>Generate Plan</span>
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </button>
-                </div>
-            </section>
-
-            <!-- Loading State -->
-            <section id="loadingState" class="planner-card loading-card hidden">
-                <div class="loader-circle"></div>
-                <h3 class="loading-title">Consulting Gemini Brain...</h3>
-                <p class="loading-subtitle">Deconstructing your goal, estimating times, and organizing tasks by priority.</p>
-            </section>
-
-            <!-- Error State -->
-            <section id="errorState" class="planner-card error-card hidden">
-                <div class="error-icon-wrapper">
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-                </div>
-                <div class="error-info">
-                    <h3 class="error-title">Something went wrong</h3>
-                    <p id="errorMessage" class="error-message">Failed to connect to the server. Please check your internet connection and try again.</p>
-                </div>
-            </section>
-
-            <!-- Tasks Result Section -->
-            <section id="resultsSection" class="results-section hidden">
-                <div class="results-header">
-                    <h2 class="section-title"><i class="fa-solid fa-list-check"></i> Actionable Roadmap</h2>
-                    <span id="taskCountBadge" class="task-badge">0 Tasks</span>
-                </div>
-                <div id="tasksGrid" class="tasks-grid">
-                    <!-- Tasks will be injected dynamically here -->
-                </div>
-            </section>
-        </main>
-
-        <footer class="app-footer">
-            <p>&copy; 2026 PlanIt AI. Empowered by Google Gemini API.</p>
-        </footer>
+  <!-- Global Nav Bar Component -->
+  <nav class="global-nav">
+    <div class="nav-container">
+      <a href="#" class="nav-brand">
+        <i class="fa-solid fa-sparkles"></i>
+        <span>PlanIt AI</span>
+      </a>
+      <div class="nav-links">
+        <a href="#" class="nav-link">Store</a>
+        <a href="#" class="nav-link">Features</a>
+        <a href="#" class="nav-link">Support</a>
+      </div>
     </div>
+  </nav>
 
-    <!-- Client-Side JavaScript Logic -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const goalInput = document.getElementById('goalInput');
-            const generateBtn = document.getElementById('generateBtn');
-            const loadingState = document.getElementById('loadingState');
-            const errorState = document.getElementById('errorState');
-            const errorMessage = document.getElementById('errorMessage');
-            const resultsSection = document.getElementById('resultsSection');
-            const tasksGrid = document.getElementById('tasksGrid');
-            const taskCountBadge = document.getElementById('taskCountBadge');
+  <div class="page-container">
+    <!-- Centered Editorial Header -->
+    <header class="header-stack">
+      <h1 class="display-title">Smart Task Planner</h1>
+      <p class="editorial-subhead">Input your goals and watch Gemini break them down into structured, actionable items.</p>
+    </header>
 
-            generateBtn.addEventListener('click', generatePlan);
-            goalInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    generatePlan();
-                }
-            });
+    <!-- Control Panel -->
+    <section class="control-panel">
+      <h2 class="panel-title">What is your next objective?</h2>
+      <div class="input-stack">
+        <input type="text" id="goalInput" class="form-input" placeholder="e.g. Plan a 3-day weekend trip to Tokyo..." required autocomplete="off">
+        <button id="generateBtn" class="btn-filled">
+          <span>Generate Plan</span>
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </section>
 
-            async function generatePlan() {
-                const goal = goalInput.value.trim();
-                if (!goal) {
-                    showError("Please enter a goal first!");
-                    return;
-                }
+    <!-- Loading Wash -->
+    <section id="loadingState" class="loading-wash hidden">
+      <div class="spinner"></div>
+      <p class="loading-text">Generating task roadmap...</p>
+    </section>
 
-                // UI Transitions
-                loadingState.classList.remove('hidden');
-                errorState.classList.add('hidden');
-                resultsSection.classList.add('hidden');
-                generateBtn.disabled = true;
-                generateBtn.style.opacity = '0.7';
+    <!-- Error Strip -->
+    <section id="errorState" class="error-strip hidden">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span id="errorMessage" class="error-txt">An error occurred. Please try again.</span>
+    </section>
 
-                try {
-                    const response = await fetch('/api/plan', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ goal })
-                    });
+    <!-- Roadmap Section -->
+    <section id="resultsSection" class="roadmap-section hidden">
+      <div class="roadmap-header">
+        <h2 class="roadmap-title">Roadmap</h2>
+        <span id="taskCountBadge" class="roadmap-count">0 tasks</span>
+      </div>
+      <div id="tasksGrid" class="grid-layout">
+        <!-- Dynmically generated cards go here -->
+      </div>
+    </section>
+  </div>
 
-                    const data = await response.json();
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>&copy; 2026 PlanIt AI. All rights reserved. Powered by Google Gemini.</p>
+    </div>
+  </footer>
 
-                    if (!response.ok) {
-                        throw new Error(data.error || "An error occurred while generating the plan.");
-                    }
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const goalInput = document.getElementById('goalInput');
+      const generateBtn = document.getElementById('generateBtn');
+      const loadingState = document.getElementById('loadingState');
+      const errorState = document.getElementById('errorState');
+      const errorMessage = document.getElementById('errorMessage');
+      const resultsSection = document.getElementById('resultsSection');
+      const tasksGrid = document.getElementById('tasksGrid');
+      const taskCountBadge = document.getElementById('taskCountBadge');
 
-                    renderTasks(data.tasks);
-                } catch (error) {
-                    showError(error.message);
-                } finally {
-                    loadingState.classList.add('hidden');
-                    generateBtn.disabled = false;
-                    generateBtn.style.opacity = '1';
-                }
-            }
+      generateBtn.addEventListener('click', generatePlan);
+      goalInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          generatePlan();
+        }
+      });
 
-            function renderTasks(tasks) {
-                tasksGrid.innerHTML = '';
-                if (!tasks || tasks.length === 0) {
-                    showError("No tasks generated for this goal. Try reframing your input.");
-                    return;
-                }
+      async function generatePlan() {
+        const goal = goalInput.value.trim();
+        if (!goal) {
+          showError("Goal input cannot be blank.");
+          return;
+        }
 
-                taskCountBadge.textContent = `${tasks.length} Tasks`;
+        // Show/hide states
+        loadingState.classList.remove('hidden');
+        errorState.classList.add('hidden');
+        resultsSection.classList.add('hidden');
+        generateBtn.disabled = true;
+        generateBtn.style.opacity = '0.7';
 
-                tasks.forEach((task, index) => {
-                    const priorityClass = task.priority.toLowerCase();
-                    const taskCard = document.createElement('div');
-                    taskCard.className = `task-card animate-card`;
-                    taskCard.style.animationDelay = `${index * 100}ms`;
+        try {
+          const response = await fetch('/api/plan', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ goal })
+          });
 
-                    taskCard.innerHTML = `
-                        <div class="task-card-header">
-                            <span class="step-badge">Step ${index + 1}</span>
-                            <span class="priority-badge ${priorityClass}">${task.priority}</span>
-                        </div>
-                        <h3 class="task-name">${task.task_name}</h3>
-                        <div class="task-meta">
-                            <i class="fa-regular fa-clock"></i>
-                            <span class="estimated-time">${task.estimated_time}</span>
-                        </div>
-                    `;
-                    tasksGrid.appendChild(taskCard);
-                });
+          const data = await response.json();
 
-                resultsSection.classList.remove('hidden');
-            }
+          if (!response.ok) {
+            throw new Error(data.error || "Failed to generate plan.");
+          }
 
-            function showError(message) {
-                errorMessage.textContent = message;
-                errorState.classList.remove('hidden');
-                resultsSection.classList.add('hidden');
-                loadingState.classList.add('hidden');
-            }
+          renderTasks(data.tasks);
+        } catch (error) {
+          showError(error.message);
+        } finally {
+          loadingState.classList.add('hidden');
+          generateBtn.disabled = false;
+          generateBtn.style.opacity = '1';
+        }
+      }
+
+      function renderTasks(tasks) {
+        tasksGrid.innerHTML = '';
+        if (!tasks || tasks.length === 0) {
+          showError("No tasks were generated. Please try again.");
+          return;
+        }
+
+        taskCountBadge.textContent = `${tasks.length} tasks`;
+
+        tasks.forEach((task, index) => {
+          const priorityClass = task.priority ? task.priority.toLowerCase() : 'low';
+          const taskCard = document.createElement('div');
+          taskCard.className = 'task-card';
+
+          taskCard.innerHTML = `
+            <div class="card-top">
+              <div class="card-badge-row">
+                <span class="step-label">Step ${index + 1}</span>
+                <span class="priority-pill ${priorityClass}">${task.priority}</span>
+              </div>
+              <h3 class="task-title">${task.task_name}</h3>
+            </div>
+            <div class="card-bottom">
+              <i class="fa-regular fa-clock"></i>
+              <span>${task.estimated_time}</span>
+            </div>
+          `;
+          tasksGrid.appendChild(taskCard);
         });
-    </script>
+
+        resultsSection.classList.remove('hidden');
+      }
+
+      function showError(message) {
+        errorMessage.textContent = message;
+        errorState.classList.remove('hidden');
+        resultsSection.classList.add('hidden');
+        loadingState.classList.add('hidden');
+      }
+    });
+  </script>
 </body>
 </html>
