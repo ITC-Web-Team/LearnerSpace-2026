@@ -45,6 +45,13 @@
           <i class="fa-solid fa-chevron-right"></i>
         </button>
       </div>
+      <div class="settings-row" style="margin-top: var(--spacing-16); display: flex; align-items: center; gap: var(--spacing-12); flex-wrap: wrap;">
+        <label for="projectStartTime" style="font-size: var(--text-body-sm); font-weight: 600; color: var(--color-graphite); display: flex; align-items: center; gap: var(--spacing-8);">
+          <i class="fa-regular fa-calendar-days" style="color: var(--color-apple-blue);"></i>
+          Project Start Time:
+        </label>
+        <input type="datetime-local" id="projectStartTime" class="form-input" style="max-width: 280px; padding: 8px var(--spacing-12); font-size: var(--text-body-sm);">
+      </div>
     </section>
 
     <!-- Loading Wash -->
@@ -107,6 +114,16 @@
       const resultsSection = document.getElementById('resultsSection');
       const tasksGrid = document.getElementById('tasksGrid');
       const taskCountBadge = document.getElementById('taskCountBadge');
+      const projectStartTimeInput = document.getElementById('projectStartTime');
+
+      // Initialize project start time to local current date-time
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      projectStartTimeInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
 
       // Modal elements
       const confirmModal = document.getElementById('confirmModal');
@@ -140,12 +157,17 @@
         pendingTasks = tasks;
         modalTasksPreview.innerHTML = '';
         
-        tasks.forEach((task, index) => {
+        // Sort tasks chronologically by start offset
+        const sortedTasks = [...tasks].sort((a, b) => a.start_offset_hours - b.start_offset_hours);
+
+        sortedTasks.forEach((task, index) => {
           const item = document.createElement('div');
           item.className = 'modal-preview-item';
+          const offsetText = task.start_offset_hours === 0 ? 'Starts immediately' : `Starts +${task.start_offset_hours}h`;
           item.innerHTML = `
             <i class="fa-solid fa-circle-notch"></i>
-            <span>Step ${index + 1}: ${task.task_name}</span>
+            <span style="flex-grow: 1;">Step ${index + 1}: ${task.task_name}</span>
+            <span style="font-size: 11px; font-weight: 600; color: var(--color-ash); background-color: var(--color-frost); padding: 2px 6px; border-radius: 4px;">${offsetText}</span>
           `;
           modalTasksPreview.appendChild(item);
         });
@@ -159,6 +181,7 @@
 
       async function generatePlan() {
         const goal = goalInput.value.trim();
+        const currentDateTime = projectStartTimeInput.value;
         if (!goal) {
           showError("Goal input cannot be blank.");
           return;
@@ -177,7 +200,7 @@
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ goal })
+            body: JSON.stringify({ goal, currentDateTime })
           });
 
           const data = await response.json();
@@ -209,8 +232,23 @@
 
         taskCountBadge.textContent = `${tasks.length} tasks`;
 
-        tasks.forEach((task, index) => {
+        // Sort tasks chronologically by start offset
+        const sortedTasks = [...tasks].sort((a, b) => a.start_offset_hours - b.start_offset_hours);
+
+        const baseTimeStr = projectStartTimeInput.value;
+        const baseTime = baseTimeStr ? new Date(baseTimeStr) : new Date();
+
+        sortedTasks.forEach((task, index) => {
           const priorityClass = task.priority ? task.priority.toLowerCase() : 'low';
+          
+          // Calculate start & end times
+          const startTime = new Date(baseTime.getTime() + (task.start_offset_hours || 0) * 60 * 60 * 1000);
+          const endTime = new Date(startTime.getTime() + (task.duration_hours || 0) * 60 * 60 * 1000);
+
+          const timeOptions = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+          const startFormatted = startTime.toLocaleString(undefined, timeOptions);
+          const endFormatted = endTime.toLocaleString(undefined, timeOptions);
+
           const taskCard = document.createElement('div');
           taskCard.className = 'task-card';
 
@@ -222,9 +260,19 @@
               </div>
               <h3 class="task-title">${task.task_name}</h3>
             </div>
-            <div class="card-bottom">
+            <div class="card-middle" style="margin-top: var(--spacing-12); font-size: var(--text-body-sm); color: var(--color-graphite); display: flex; flex-direction: column; gap: var(--spacing-4);">
+              <div style="display: flex; align-items: center; gap: var(--spacing-8);">
+                <i class="fa-solid fa-hourglass-start" style="color: var(--color-apple-blue); font-size: 12px; width: 14px;"></i>
+                <span><strong>Start:</strong> ${startFormatted}</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: var(--spacing-8);">
+                <i class="fa-solid fa-hourglass-end" style="color: var(--color-apple-blue); font-size: 12px; width: 14px;"></i>
+                <span><strong>End:</strong> ${endFormatted}</span>
+              </div>
+            </div>
+            <div class="card-bottom" style="margin-top: var(--spacing-12); padding-top: var(--spacing-12); border-top: 1px solid var(--color-pebble);">
               <i class="fa-regular fa-clock"></i>
-              <span>${task.estimated_time}</span>
+              <span>Duration: ${task.estimated_time}</span>
             </div>
           `;
           tasksGrid.appendChild(taskCard);
