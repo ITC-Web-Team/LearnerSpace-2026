@@ -77,6 +77,26 @@
     </div>
   </footer>
 
+  <!-- Confirmation Dialog Modal -->
+  <div id="confirmModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <i class="fa-solid fa-circle-question modal-icon"></i>
+        <h3 class="modal-title">Confirm Task Roadmap</h3>
+      </div>
+      <div class="modal-body">
+        <p class="modal-description">Gemini has proposed the following step-by-step roadmap. Would you like to include this task list?</p>
+        <div id="modalTasksPreview" class="modal-preview-list">
+          <!-- Dynamically populated preview list -->
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="modalCancelBtn" class="btn-outline">Cancel</button>
+        <button id="modalConfirmBtn" class="btn-filled">Include Tasks</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const goalInput = document.getElementById('goalInput');
@@ -88,12 +108,54 @@
       const tasksGrid = document.getElementById('tasksGrid');
       const taskCountBadge = document.getElementById('taskCountBadge');
 
+      // Modal elements
+      const confirmModal = document.getElementById('confirmModal');
+      const modalTasksPreview = document.getElementById('modalTasksPreview');
+      const modalCancelBtn = document.getElementById('modalCancelBtn');
+      const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+
+      let pendingTasks = null;
+
       generateBtn.addEventListener('click', generatePlan);
       goalInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
           generatePlan();
         }
       });
+
+      modalConfirmBtn.addEventListener('click', () => {
+        if (pendingTasks) {
+          renderTasks(pendingTasks);
+          pendingTasks = null;
+        }
+        hideModal();
+      });
+
+      modalCancelBtn.addEventListener('click', () => {
+        pendingTasks = null;
+        hideModal();
+      });
+
+      function showModal(tasks) {
+        pendingTasks = tasks;
+        modalTasksPreview.innerHTML = '';
+        
+        tasks.forEach((task, index) => {
+          const item = document.createElement('div');
+          item.className = 'modal-preview-item';
+          item.innerHTML = `
+            <i class="fa-solid fa-circle-notch"></i>
+            <span>Step ${index + 1}: ${task.task_name}</span>
+          `;
+          modalTasksPreview.appendChild(item);
+        });
+
+        confirmModal.classList.remove('hidden');
+      }
+
+      function hideModal() {
+        confirmModal.classList.add('hidden');
+      }
 
       async function generatePlan() {
         const goal = goalInput.value.trim();
@@ -124,7 +186,11 @@
             throw new Error(data.error || "Failed to generate plan.");
           }
 
-          renderTasks(data.tasks);
+          if (!data.tasks || data.tasks.length === 0) {
+            throw new Error("No tasks were generated. Please try again.");
+          }
+
+          showModal(data.tasks);
         } catch (error) {
           showError(error.message);
         } finally {
