@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Smart Task Planner</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="glass-bg"></div>
+    <div class="glow-sphere orange"></div>
+    <div class="glow-sphere purple"></div>
+
+    <div class="container">
+        <header class="app-header">
+            <div class="logo-wrapper">
+                <i class="fa-solid fa-wand-magic-sparkles logo-icon"></i>
+                <h1 class="app-title">PlanIt<span>AI</span></h1>
+            </div>
+            <p class="app-subtitle">Transform your ambitious goals into step-by-step actionable plans instantly powered by Gemini.</p>
+        </header>
+
+        <main class="main-content">
+            <!-- Planner Config Section -->
+            <section class="planner-card input-section">
+                <h2 class="section-title"><i class="fa-solid fa-compass"></i> What's your next goal?</h2>
+                <div class="input-group">
+                    <input type="text" id="goalInput" placeholder="e.g., Plan a 3-day weekend trip to Tokyo, prepare for a technical interview, launch a product..." required autocomplete="off">
+                    <button id="generateBtn" class="primary-btn">
+                        <span>Generate Plan</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Loading State -->
+            <section id="loadingState" class="planner-card loading-card hidden">
+                <div class="loader-circle"></div>
+                <h3 class="loading-title">Consulting Gemini Brain...</h3>
+                <p class="loading-subtitle">Deconstructing your goal, estimating times, and organizing tasks by priority.</p>
+            </section>
+
+            <!-- Error State -->
+            <section id="errorState" class="planner-card error-card hidden">
+                <div class="error-icon-wrapper">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div class="error-info">
+                    <h3 class="error-title">Something went wrong</h3>
+                    <p id="errorMessage" class="error-message">Failed to connect to the server. Please check your internet connection and try again.</p>
+                </div>
+            </section>
+
+            <!-- Tasks Result Section -->
+            <section id="resultsSection" class="results-section hidden">
+                <div class="results-header">
+                    <h2 class="section-title"><i class="fa-solid fa-list-check"></i> Actionable Roadmap</h2>
+                    <span id="taskCountBadge" class="task-badge">0 Tasks</span>
+                </div>
+                <div id="tasksGrid" class="tasks-grid">
+                    <!-- Tasks will be injected dynamically here -->
+                </div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; 2026 PlanIt AI. Empowered by Google Gemini API.</p>
+        </footer>
+    </div>
+
+    <!-- Client-Side JavaScript Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const goalInput = document.getElementById('goalInput');
+            const generateBtn = document.getElementById('generateBtn');
+            const loadingState = document.getElementById('loadingState');
+            const errorState = document.getElementById('errorState');
+            const errorMessage = document.getElementById('errorMessage');
+            const resultsSection = document.getElementById('resultsSection');
+            const tasksGrid = document.getElementById('tasksGrid');
+            const taskCountBadge = document.getElementById('taskCountBadge');
+
+            generateBtn.addEventListener('click', generatePlan);
+            goalInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    generatePlan();
+                }
+            });
+
+            async function generatePlan() {
+                const goal = goalInput.value.trim();
+                if (!goal) {
+                    showError("Please enter a goal first!");
+                    return;
+                }
+
+                // UI Transitions
+                loadingState.classList.remove('hidden');
+                errorState.classList.add('hidden');
+                resultsSection.classList.add('hidden');
+                generateBtn.disabled = true;
+                generateBtn.style.opacity = '0.7';
+
+                try {
+                    const response = await fetch('/api/plan', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ goal })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || "An error occurred while generating the plan.");
+                    }
+
+                    renderTasks(data.tasks);
+                } catch (error) {
+                    showError(error.message);
+                } finally {
+                    loadingState.classList.add('hidden');
+                    generateBtn.disabled = false;
+                    generateBtn.style.opacity = '1';
+                }
+            }
+
+            function renderTasks(tasks) {
+                tasksGrid.innerHTML = '';
+                if (!tasks || tasks.length === 0) {
+                    showError("No tasks generated for this goal. Try reframing your input.");
+                    return;
+                }
+
+                taskCountBadge.textContent = `${tasks.length} Tasks`;
+
+                tasks.forEach((task, index) => {
+                    const priorityClass = task.priority.toLowerCase();
+                    const taskCard = document.createElement('div');
+                    taskCard.className = `task-card animate-card`;
+                    taskCard.style.animationDelay = `${index * 100}ms`;
+
+                    taskCard.innerHTML = `
+                        <div class="task-card-header">
+                            <span class="step-badge">Step ${index + 1}</span>
+                            <span class="priority-badge ${priorityClass}">${task.priority}</span>
+                        </div>
+                        <h3 class="task-name">${task.task_name}</h3>
+                        <div class="task-meta">
+                            <i class="fa-regular fa-clock"></i>
+                            <span class="estimated-time">${task.estimated_time}</span>
+                        </div>
+                    `;
+                    tasksGrid.appendChild(taskCard);
+                });
+
+                resultsSection.classList.remove('hidden');
+            }
+
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorState.classList.remove('hidden');
+                resultsSection.classList.add('hidden');
+                loadingState.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
