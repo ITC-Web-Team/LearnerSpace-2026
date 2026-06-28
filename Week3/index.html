@@ -20,11 +20,6 @@
         <i class="fa-solid fa-sparkles"></i>
         <span>PlanIt AI</span>
       </a>
-      <div class="nav-links">
-        <a href="#" class="nav-link">Store</a>
-        <a href="#" class="nav-link">Features</a>
-        <a href="#" class="nav-link">Support</a>
-      </div>
     </div>
   </nav>
 
@@ -160,14 +155,34 @@
         // Sort tasks chronologically by start offset
         const sortedTasks = [...tasks].sort((a, b) => a.start_offset_hours - b.start_offset_hours);
 
+        const baseTimeStr = projectStartTimeInput.value;
+        const baseTime = baseTimeStr ? new Date(baseTimeStr) : new Date();
+
         sortedTasks.forEach((task, index) => {
+          const startTime = new Date(baseTime.getTime() + (task.start_offset_hours || 0) * 60 * 60 * 1000);
+          const endTime = new Date(startTime.getTime() + (task.duration_hours || 0) * 60 * 60 * 1000);
+
+          const timeOptions = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+          const startFormatted = startTime.toLocaleString(undefined, timeOptions);
+          const endFormatted = endTime.toLocaleString(undefined, timeOptions);
+
           const item = document.createElement('div');
           item.className = 'modal-preview-item';
+          item.style.flexDirection = 'column';
+          item.style.alignItems = 'flex-start';
+
           const offsetText = task.start_offset_hours === 0 ? 'Starts immediately' : `Starts +${task.start_offset_hours}h`;
+          
           item.innerHTML = `
-            <i class="fa-solid fa-circle-notch"></i>
-            <span style="flex-grow: 1;">Step ${index + 1}: ${task.task_name}</span>
-            <span style="font-size: 11px; font-weight: 600; color: var(--color-ash); background-color: var(--color-frost); padding: 2px 6px; border-radius: 4px;">${offsetText}</span>
+            <div style="display: flex; width: 100%; align-items: center; gap: var(--spacing-8);">
+              <i class="fa-solid fa-circle-notch"></i>
+              <span style="flex-grow: 1; font-weight: 600;">Step ${index + 1}: ${task.task_name}</span>
+              <span style="font-size: 11px; font-weight: 600; color: var(--color-ash); background-color: var(--color-frost); padding: 2px 6px; border-radius: 4px;">${offsetText}</span>
+            </div>
+            <div style="font-size: 12px; color: var(--color-graphite); padding-left: 22px; display: flex; flex-direction: column; gap: 2px; margin-top: 6px;">
+              <div><i class="fa-solid fa-hourglass-start" style="color: var(--color-apple-blue); width: 14px;"></i> <strong>Start:</strong> ${startFormatted}</div>
+              <div><i class="fa-solid fa-hourglass-end" style="color: var(--color-apple-blue); width: 14px;"></i> <strong>End:</strong> ${endFormatted}</div>
+            </div>
           `;
           modalTasksPreview.appendChild(item);
         });
